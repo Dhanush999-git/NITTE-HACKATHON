@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AgriSense — Fertilizer Prediction</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+</head>
+
+<body>
+  <div class="page">
+
+    <main class="panel">
+      <header class="panel-header">
+        <div class="brand">
+          <div class="logo"></div>
+          <div>
+            <h1>AgriSense</h1>
+            <p>Fertilizer Recommendation</p>
+          </div>
+        </div>
+
+        <!-- CHANGED: Points to root '/' (TAI Dashboard), NOT crop page -->
+        <button class="btn ghost" onclick="window.location.href='/'">
+          Back to TAI Dashboard
+        </button>
+      </header>
+
+      <h2>Fertilizer Prediction</h2>
+      <p class="hint">Provide crop & soil info — we'll recommend fertilizer.</p>
+
+      <!-- FERT FORM -->
+      <form id="fertForm" class="form">
+        <div class="row">
+          <label>Crop Type</label>
+          <select id="f_crop" class="select"></select>
+        </div>
+
+        <div class="row">
+          <label>Soil Type</label>
+          <select id="f_soil" class="select">
+            <option>Sandy</option>
+            <option>Loamy</option>
+            <option>Clay</option>
+            <option>Red</option>
+            <option>Black</option>
+          </select>
+        </div>
+
+        <div class="row double">
+          <div>
+            <label>Nitrogen (N)</label>
+            <input id="f_N" type="number" />
+          </div>
+          <div>
+            <label>Phosphorus (P)</label>
+            <input id="f_P" type="number" />
+          </div>
+        </div>
+
+        <div class="row double">
+          <div>
+            <label>Potassium (K)</label>
+            <input id="f_K" type="number" />
+          </div>
+          <div>
+            <label>Moisture (%)</label>
+            <input id="f_moisture" type="number" />
+          </div>
+        </div>
+
+        <div class="row double">
+          <div>
+            <label>Temperature (°C)</label>
+            <input id="f_temperature" type="number" />
+          </div>
+          <div>
+            <label>Humidity (%)</label>
+            <input id="f_humidity" type="number" />
+          </div>
+        </div>
+
+        <div class="row actions">
+          <button type="button" id="predictFertBtn" class="btn primary">Predict Fertilizer</button>
+          <button type="reset" class="btn ghost">Reset</button>
+        </div>
+
+        <div id="fertResult"></div>
+      </form>
+    </main>
+
+    <!-- RIGHT SIDE IMAGE -->
+    <aside class="visual">
+      <img src="https://tse2.mm.bing.net/th/id/OIP.3jk1PdUaKyQgMYlf_GP_6gHaFM?rs=1&pid=ImgDetMain&o=7&rm=3"
+           alt="Fertilizer Image"
+           style="width: 80%; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);">
+    </aside>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='js/fertilizer.js') }}"></script>
+
+</body>
+</html>

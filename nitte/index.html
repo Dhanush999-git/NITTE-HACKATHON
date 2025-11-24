@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Suitability Checker</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #eef2f7;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .container {
+            width: 650px;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #111827;
+        }
+
+        #lang {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background: #f3f7ff;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            background: #3b63f6;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #3354d7;
+        }
+
+        .result-card {
+            background: #f9fafb;
+            margin-top: 30px;
+            padding: 28px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.07);
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #111827;
+        }
+
+        .section-title {
+            margin-top: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        ul {
+            margin-top: 10px;
+            padding-left: 22px;
+        }
+
+        ul li {
+            font-size: 15px;
+            padding: 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADING + LANGUAGE DROPDOWN ON RIGHT -->
+    <div class="header-row">
+        <h1 id="title">Crop Suitability Checker</h1>
+
+        <select id="lang">
+            <option value="en">English</option>
+            <option value="kn">Kannada</option>
+            <option value="hi">Hindi</option>
+        </select>
+    </div>
+
+    <form id="form">
+        <input id="crop" placeholder="Enter crop name" required>
+        <input id="temp" placeholder="Temperature (°C)" required>
+        <input id="humidity" placeholder="Humidity (%)" required>
+        <input id="rainfall" placeholder="Rainfall (mm)" required>
+
+        <button type="submit" id="btn">Check Suitability</button>
+    </form>
+
+    <div id="output"></div>
+
+</div>
+
+<script>
+    const translations = {
+        en: {
+            title: "Crop Suitability Checker",
+            crop: "Enter crop name",
+            temp: "Temperature (°C)",
+            humidity: "Humidity (%)",
+            rainfall: "Rainfall (mm)",
+            button: "Check Suitability",
+            suitable_yes: (crop) => `YES — '${crop}' is suitable!`,
+            suitable_no: (crop) => `NO — '${crop}' is not suitable.`,
+            recommended: "Top Recommended Crops"
+        },
+
+        kn: {
+            title: "ಬೆಳೆ ಸೂಕ್ತತೆ ಪರಿಶೀಲನೆ",
+            crop: "ಬೆಳೆಯ ಹೆಸರು ನಮೂದಿಸಿ",
+            temp: "ತಾಪಮಾನ (°C)",
+            humidity: "ಆರ್ದ್ರತೆ (%)",
+            rainfall: "ವರ್ಷಾ ಪ್ರಮಾಣ (mm)",
+            button: "ಸೂಕ್ತತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ",
+            suitable_yes: (crop) => `ಹೌದು — '${crop}' ಬೆಳೆ ಸೂಕ್ತವಾಗಿದೆ!`,
+            suitable_no: (crop) => `ಇಲ್ಲ — '${crop}' ಬೆಳೆ ಸೂಕ್ತವಲ್ಲ.`,
+            recommended: "ಅತ್ಯುತ್ತಮ ಶಿಫಾರಸು ಬೆಳೆಗಳು"
+        },
+
+        hi: {
+            title: "फसल उपयुक्तता जांच",
+            crop: "फसल का नाम दर्ज करें",
+            temp: "तापमान (°C)",
+            humidity: "नमी (%)",
+            rainfall: "वर्षा (mm)",
+            button: "उपयुक्तता जांचें",
+            suitable_yes: (crop) => `हाँ — '${crop}' उपयुक्त है!`,
+            suitable_no: (crop) => `नहीं — '${crop}' उपयुक्त नहीं है।`,
+            recommended: "शीर्ष अनुशंसित फसलें"
+        }
+    };
+
+    document.getElementById("lang").addEventListener("change", updateLanguage);
+
+    function updateLanguage() {
+        let lang = document.getElementById("lang").value;
+        let t = translations[lang];
+
+        document.getElementById("title").innerText = t.title;
+        document.getElementById("crop").placeholder = t.crop;
+        document.getElementById("temp").placeholder = t.temp;
+        document.getElementById("humidity").placeholder = t.humidity;
+        document.getElementById("rainfall").placeholder = t.rainfall;
+        document.getElementById("btn").innerText = t.button;
+    }
+
+    document.getElementById("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const crop = document.getElementById("crop").value;
+        const temp = document.getElementById("temp").value;
+        const humidity = document.getElementById("humidity").value;
+        const rainfall = document.getElementById("rainfall").value;
+
+        fetch("http://127.0.0.1:5000/check", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                crop: crop,
+                temperature: temp,
+                humidity: humidity,
+                rainfall: rainfall
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            let lang = document.getElementById("lang").value;
+            let t = translations[lang];
+
+            document.getElementById("output").innerHTML = `
+                <div class="result-card">
+                    <div class="result-title">
+                        ${data.isSuitable ? t.suitable_yes(crop) : t.suitable_no(crop)}
+                    </div>
+
+                    <div class="section-title">${t.recommended}</div>
+                    <ul>
+                        ${data.top_crops.map(x => `
+                            <li>${x.crop} (${(x.confidence * 100).toFixed(2)}%)</li>
+                        `).join("")}
+                    </ul>
+                </div>
+            `;
+        })
+        .catch(() => {
+            document.getElementById("output").innerHTML = "Server error.";
+        });
+    });
+</script>
+
+</body>
+</html>

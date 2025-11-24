@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Annapurna Initiative - Dashboard</title>
+
+    <!--=============== REMIX ICONS ===============-->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!--=============== GOOGLE FONTS ===============-->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /*=============== CSS VARIABLES & RESET ===============*/
+        :root {
+            --header-height: 3.5rem;
+            --hue: 152; /* Agrix Green Hue */
+            --first-color: hsl(var(--hue), 73%, 30%);
+            --first-color-alt: hsl(var(--hue), 73%, 32%);
+            --first-color-light: hsl(var(--hue), 73%, 66%);
+            --title-color: hsl(var(--hue), 4%, 15%);
+            --text-color: hsl(var(--hue), 4%, 35%);
+            --text-color-light: hsl(var(--hue), 4%, 55%);
+            --body-color: hsl(var(--hue), 0%, 100%);
+            --container-color: #FFF;
+            --body-font: 'Poppins', sans-serif;
+            --normal-font-size: .938rem;
+            --z-fixed: 100;
+        }
+
+        /*=============== DARK THEME VARIABLES ===============*/
+        body.dark-theme {
+            --title-color: hsl(var(--hue), 4%, 95%);
+            --text-color: hsl(var(--hue), 4%, 75%);
+            --body-color: hsl(var(--hue), 8%, 12%);
+            --container-color: hsl(var(--hue), 8%, 16%);
+        }
+
+        /* Dark Theme Specific Overrides */
+        body.dark-theme .header { box-shadow: 0 1px 4px rgba(255,255,255,0.05); }
+        body.dark-theme #dashboard-container { background-color: var(--body-color); }
+        body.dark-theme .dash-header, 
+        body.dark-theme .dash-card, 
+        body.dark-theme .feature-detail,
+        body.dark-theme .login-box,
+        body.dark-theme #contact div {
+            background-color: var(--container-color) !important;
+            color: var(--text-color);
+            border-color: #333;
+        }
+        body.dark-theme input {
+            background-color: var(--body-color);
+            color: var(--title-color);
+            border: 1px solid #444;
+        }
+        body.dark-theme .result-box {
+            background-color: var(--body-color);
+            border-left-color: #555;
+        }
+
+        * { box-sizing: border-box; padding: 0; margin: 0; }
+        body { margin: var(--header-height) 0 0 0; font-family: var(--body-font); font-size: var(--normal-font-size); background-color: var(--body-color); color: var(--text-color); transition: .4s; }
+        button { cursor: pointer; border: none; outline: none; }
+        h1, h2, h3 { color: var(--title-color); font-weight: 600; }
+        ul { list-style: none; } a { text-decoration: none; } img { max-width: 100%; height: auto; }
+        input { outline: none; }
+
+        /*=============== LAYOUT ===============*/
+        .container { max-width: 968px; margin: 0 auto; padding: 0 1.5rem; }
+        .grid { display: grid; gap: 1.5rem; }
+        .header { width: 100%; position: fixed; top: 0; left: 0; z-index: var(--z-fixed); background-color: var(--body-color); box-shadow: 0 1px 4px rgba(0,0,0,0.1); transition: .4s; }
+        .nav { height: var(--header-height); display: flex; justify-content: space-between; align-items: center; }
+        .nav__logo { color: var(--first-color); font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .nav__list { display: flex; gap: 2rem; align-items: center; }
+        .nav__link { color: var(--title-color); font-weight: 500; transition: .3s; }
+        .nav__link:hover { color: var(--first-color); }
+
+        /*=============== BUTTONS ===============*/
+        .button { display: inline-flex; align-items: center; gap: .5rem; background-color: var(--first-color); color: #FFF; padding: .75rem 1.5rem; border-radius: .5rem; font-weight: 500; transition: .3s; }
+        .button:hover { background-color: var(--first-color-alt); transform: translateY(-3px); }
+        .button--link { background: none; color: var(--first-color); padding: 0; }
+        .button--link:hover { text-decoration: underline; }
+
+        /*=============== LANDING PAGE ===============*/
+        .section { padding: 4.5rem 0 2rem; }
+        .home { padding-top: 6rem; }
+        .home__container { grid-template-columns: repeat(2, 1fr); align-items: center; }
+        .home__title { font-size: 2.5rem; line-height: 120%; margin-bottom: 1rem; }
+        
+        /*=============== APP INTERFACE (HIDDEN INITIALLY) ===============*/
+        #app-interface { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--body-color); z-index: 200; overflow-y: auto; }
+        
+        /* LOGIN */
+        #login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background-image: url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; }
+        .login-box { background: rgba(255, 255, 255, 0.9); padding: 2.5rem; border-radius: 1rem; width: 90%; max-width: 400px; text-align: center; }
+        .login-box input { width: 100%; padding: 1rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: .5rem; }
+
+        /* DASHBOARD */
+        #dashboard-container { display: none; min-height: 100vh; background-color: #f4f7f6; transition: .4s; }
+        .dash-header { background: #FFF; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: .4s; }
+        .main-content { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        
+        /* CARDS */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .dash-card { background: #FFF; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: .3s; border-top: 5px solid var(--first-color); }
+        .dash-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .dash-card h3 { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 1.1rem; }
+        .dash-card-icon { font-size: 1.5rem; color: var(--first-color); }
+
+        /* FEATURE VIEWS (OVERLAYS) */
+        #feature-views { display: none; margin-top: 2rem; }
+        .feature-detail { background: #FFF; padding: 2rem; border-radius: 1rem; animation: fadeIn 0.4s; }
+        
+        /* FORMS */
+        .pred-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; }
+        .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 0.5rem; transition: .3s; }
+        .form-group input:focus { border-color: var(--first-color); box-shadow: 0 0 0 2px rgba(0,128,0,0.1); }
+        
+        /* RESULTS */
+        .result-box { margin-top: 2rem; padding: 1.5rem; border-radius: 0.5rem; background: #f9f9f9; border-left: 5px solid #ddd; text-align: left; }
+        .result-box.success { border-left-color: var(--first-color); background: #f0fdf4; }
+        .result-box.danger { border-left-color: #e74c3c; background: #fdf2f2; }
+        .rec-list li { padding: 0.5rem 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        
+        /* THEME TOGGLE ICON */
+        .change-theme { font-size: 1.25rem; color: var(--title-color); cursor: pointer; transition: .3s; }
+        .change-theme:hover { color: var(--first-color); }
+
+        /* =============== GOOGLE TRANSLATE CUSTOM STYLES =============== */
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            font-family: var(--body-font) !important;
+        }
+        .goog-te-gadget-simple .goog-te-menu-value {
+            color: var(--title-color) !important;
+        }
+        .goog-te-gadget-simple .goog-te-menu-value span {
+            font-weight: 500 !important;
+            color: var(--title-color) !important;
+            border-left: none !important;
+        }
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+        /* Hide Google top frame */
+        body { top: 0 !important; }
+        .goog-te-banner-frame { display: none !important; }
+
+        @media screen and (max-width: 768px) {
+            .home__container, .pred-form-grid { grid-template-columns: 1fr; }
+            .nav__menu { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--body-color); padding: 2rem 1.5rem; transition: .3s; }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!--==================== HEADER ====================-->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="#" class="nav__logo"><i class="ri-leaf-line"></i> TEAM NEON</a>
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="#home" class="nav__link active-link">Home</a></li>
+                    <li class="nav__item"><a href="#about" class="nav__link">About</a></li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Contact</a></li>
+                    
+                    <!-- LANGUAGE TRANSLATOR -->
+                    <li class="nav__item">
+                        <div id="google_translate_element"></div>
+                    </li>
+
+                    <!-- THEME BUTTON -->
+                    <li class="nav__item">
+                        <i class="ri-moon-line change-theme" id="theme-button"></i>
+                    </li>
+                    <li class="nav__item"><a href="#" onclick="showApp()" class="button" style="padding: 0.5rem 1rem;">Login</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!--==================== LANDING PAGE ====================-->
+    <main class="main" id="landing-page-wrapper">
+        <section class="home section" id="home">
+            <div class="home__container container grid">
+                <div class="home__data">
+                    <h1 class="home__title">The Annapurna <br> Initiative</h1>
+                    <p class="home__description">Empowering farmers through sustainable technology and data-driven insights.</p>
+                    <a href="#" onclick="showApp()" class="button">Access Portal <i class="ri-arrow-right-line"></i></a>
+                </div>
+                <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Farming" style="border-radius: 1rem;">
+            </div>
+        </section>
+
+        <section class="section container" id="about">
+            <h2 class="section__title" style="text-align: center;">Why SmartFarm Assist?</h2>
+            <div class="grid" style="grid-template-columns: repeat(3, 1fr); text-align: center; gap: 2rem; margin-top: 2rem;">
+                <div><i class="ri-sun-cloudy-line" style="font-size: 2rem; color: var(--first-color);"></i><h3>Weather Logic</h3></div>
+                <div><i class="ri-plant-line" style="font-size: 2rem; color: var(--first-color);"></i><h3>Crop Prediction</h3></div>
+                <div><i class="ri-flask-line" style="font-size: 2rem; color: var(--first-color);"></i><h3>Fertilizer Advice</h3></div>
+            </div>
+        </section>
+
+        <!--==================== CONTACT SUPPORT SECTION ====================-->
+        <section class="section container" id="contact">
+            <h2 class="section__title" style="text-align: center; margin-bottom: 2rem;">Contact Support</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center;">
+                
+                <div style="padding: 2rem; background: #f8f9fa; border-radius: 1rem; border: 1px solid #eee;">
+                    <i class="ri-phone-line" style="font-size: 2.5rem; color: var(--first-color); margin-bottom: 1rem; display: block;"></i>
+                    <h3 style="margin-bottom: 0.5rem;">Call Us</h3>
+                    <p>Available anytime</p>
+                    <p style="color: var(--first-color); font-weight: 600; margin-top: 0.5rem; font-size: 1.1rem;">+91 9480650462</p>
+                </div>
+
+                <div style="padding: 2rem; background: #f8f9fa; border-radius: 1rem; border: 1px solid #eee;">
+                    <i class="ri-mail-line" style="font-size: 2.5rem; color: var(--first-color); margin-bottom: 1rem; display: block;"></i>
+                    <h3 style="margin-bottom: 0.5rem;">Email Support</h3>
+                    <p>We reply within 24 hours</p>
+                    <p style="color: var(--first-color); font-weight: 600; margin-top: 0.5rem; font-size: 1.1rem;">teamneon33@gmail.com</p>
+                </div>
+
+            </div>
+            <div style="margin-top: 3rem; text-align: center; font-size: 0.8rem; color: var(--text-color-light);">
+                &copy; 2025 Team Neon. All rights reserved.
+            </div>
+        </section>
+    </main>
+
+    <!--==================== APP INTERFACE ====================-->
+    <div id="app-interface">
+        
+        <!-- LOGIN -->
+        <div id="login-container">
+            <div class="login-box">
+                <h1 style="color: var(--first-color);">Agrix Portal</h1>
+                <p>The Annapurna Initiative</p>
+                <form id="loginForm">
+                    <input type="text" id="username" placeholder="Username (admin)" required>
+                    <input type="password" id="password" placeholder="Password (1234)" required>
+                    <button type="submit" class="button" style="width: 100%; justify-content: center;">Log In</button>
+                    <button type="button" onclick="showLanding()" class="button--link" style="margin-top: 1rem;">Back to Website</button>
+                    <div id="loginError" style="color: red; margin-top: 10px; display: none;">Invalid Credentials!</div>
+                </form>
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard-container">
+            <header class="dash-header">
+                <a href="#" class="nav__logo"><i class="ri-leaf-line"></i> TAI Dashboard</a>
+                <div>
+                    <span>Welcome, <b id="userDisplay">Farmer</b></span>
+                    <button onclick="logout()" class="button--link" style="margin-left: 15px;">Logout</button>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <div id="welcome-msg" style="background: var(--first-color); color: #fff; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem;">
+                    <h2>Farm Intelligence Overview</h2>
+                    <p>Select a tool below to begin analysis.</p>
+                </div>
+
+         <!-- CARDS GRID -->
+<div class="dashboard-grid" id="main-grid">
+    
+    <!-- 1. CROP SUITABILITY -->
+    <div class="dash-card" onclick="openFeature('suitability')">
+        <h3><span>Suitability Checker</span> <i class="ri-sun-cloudy-line dash-card-icon"></i></h3>
+        <p><strong>Check:</strong> Can I grow this?</p>
+        <p style="font-size:0.8rem; margin-top:10px; color: var(--text-color-light)">Check Feasibility &rarr;</p>
+    </div>
+
+    <!-- 2. CROP RECOMMENDATION -->
+    <div class="dash-card" onclick="window.location.href='/crop'">
+        <h3><span>Crop Recommendation</span> <i class="ri-seedling-line dash-card-icon"></i></h3>
+        <!-- ADDED AGRICULTURAL PICTURE -->
+        <p><strong>Input:</strong> State, District, NPK</p>
+        <p style="font-size:0.8rem; margin-top:10px; color: var(--text-color-light)">Go to Tool &rarr;</p>
+    </div>
+
+    <!-- 3. FERTILIZER -->
+    <div class="dash-card" onclick="window.location.href='/fertilizer'">
+        <h3><span>Fertilizer Advisor</span> <i class="ri-flask-line dash-card-icon"></i></h3>
+        <p><strong>Input:</strong> Crop & Soil details</p>
+        <p style="font-size:0.8rem; margin-top:10px; color: var(--text-color-light)">Go to Tool &rarr;</p>
+    </div>
+
+    <!-- 4. DISEASE DETECTION (REPLACED MARKETPLACE) -->
+    <div class="dash-card" onclick="window.location.href='/disease'">
+        <h3><span>Disease Detection</span> <i class="ri-camera-lens-line dash-card-icon"></i></h3>
+        <p><strong>Input:</strong> Upload Leaf Photo</p>
+        <p style="font-size:0.8rem; margin-top:10px; color: var(--text-color-light)">Go to Tool &rarr;</p>
+    </div>
+</div>
+
+                <!-- FEATURE OVERLAYS (Hidden by Default) -->
+                <div id="feature-views">
+                    
+                    <!-- === VIEW 1: SUITABILITY CHECKER === -->
+                    <div id="view-suitability" class="feature-detail">
+                        <button class="button" onclick="closeFeature()" style="margin-bottom: 1.5rem;">&larr; Back</button>
+                        <h2 style="color: var(--first-color); margin-bottom: 1rem;">Crop Suitability Checker</h2>
+                        <p style="margin-bottom: 1.5rem;">Check if a specific crop can grow in your current weather conditions.</p>
+                        
+                        <form id="suitabilityForm">
+                            <div class="pred-form-grid">
+                                <div class="form-group">
+                                    <label>Crop Name</label>
+                                    <input type="text" id="suit-crop" placeholder="e.g. Rice" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Temperature (°C)</label>
+                                    <input type="number" id="suit-temp" placeholder="26.5" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Humidity (%)</label>
+                                    <input type="number" id="suit-humid" placeholder="80" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Rainfall (mm)</label>
+                                    <input type="number" id="suit-rain" placeholder="150" step="0.1" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="button">Check Suitability <i class="ri-search-line"></i></button>
+                        </form>
+                        <div id="suitability-output"></div>
+                    </div>
+
+                    <!-- === VIEW 2: CROP RECOMMENDATION === -->
+                    <div id="view-recommendation" class="feature-detail">
+                        <button class="button" onclick="closeFeature()" style="margin-bottom: 1.5rem;">&larr; Back</button>
+                        <img src="https://media.istockphoto.com/id/543212762/photo/tractor-cultivating-field-at-spring.jpg?s=612x612&w=0&k=20&c=uJDy7MECNZeHDKfUrLNeQuT7A1IqQe89lmLREhjIJYU=" alt="Crops" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
+                        <h2 style="color: var(--first-color); margin-bottom: 1rem;">AI Crop Recommendation</h2>
+                        <p style="margin-bottom: 1.5rem;">Enter soil details to find the most profitable crop.</p>
+                        
+                        <form id="recommendationForm">
+                            <div class="pred-form-grid">
+                                <div class="form-group">
+                                    <label>Nitrogen (N)</label>
+                                    <input type="number" id="rec-N" placeholder="90" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phosphorus (P)</label>
+                                    <input type="number" id="rec-P" placeholder="42" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Potassium (K)</label>
+                                    <input type="number" id="rec-K" placeholder="43" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Soil pH</label>
+                                    <input type="number" id="rec-ph" placeholder="6.5" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Temperature (°C)</label>
+                                    <input type="number" id="rec-temp" placeholder="28" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Humidity (%)</label>
+                                    <input type="number" id="rec-humid" placeholder="70" step="0.1" required>
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label>Rainfall (mm)</label>
+                                    <input type="number" id="rec-rain" placeholder="200" step="0.1" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="button" style="width:100%">Predict Best Crop <i class="ri-magic-line"></i></button>
+                        </form>
+                        <div id="recommendation-output" style="margin-top:2rem;"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--=============== GOOGLE TRANSLATE SCRIPT ===============-->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en', 
+                includedLanguages: 'en,hi,kn', 
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!--=============== JAVASCRIPT ===============-->
+    <script>
+    // --- UI VARIABLES ---
+    const landingWrapper = document.getElementById('landing-page-wrapper');
+    const appInterface = document.getElementById('app-interface');
+    const loginContainer = document.getElementById('login-container');
+    const dashboardContainer = document.getElementById('dashboard-container');
+    const mainGrid = document.getElementById('main-grid');
+    const featureViews = document.getElementById('feature-views');
+
+    // --- DARK/LIGHT THEME ---
+    const themeButton = document.getElementById('theme-button')
+    const darkTheme = 'dark-theme'
+    const iconTheme = 'ri-sun-line'
+
+    // Previously selected topic (if user selected)
+    const selectedTheme = localStorage.getItem('selected-theme')
+    const selectedIcon = localStorage.getItem('selected-icon')
+
+    const getCurrentTheme = () => document.body.classList.contains(darkTheme) ? 'dark' : 'light'
+    const getCurrentIcon = () => themeButton.classList.contains(iconTheme) ? 'ri-moon-line' : 'ri-sun-line'
+
+    if (selectedTheme) {
+        document.body.classList[selectedTheme === 'dark' ? 'add' : 'remove'](darkTheme)
+        themeButton.classList[selectedIcon === 'ri-moon-line' ? 'add' : 'remove'](iconTheme)
+    }
+
+    themeButton.addEventListener('click', () => {
+        document.body.classList.toggle(darkTheme)
+        themeButton.classList.toggle(iconTheme)
+        localStorage.setItem('selected-theme', getCurrentTheme())
+        localStorage.setItem('selected-icon', getCurrentIcon())
+    })
+
+
+    // --- 1. CHECK LOGIN ON PAGE LOAD ---
+    window.onload = function() {
+        // Re-apply theme check on load
+        if (selectedTheme) {
+            document.body.classList[selectedTheme === 'dark' ? 'add' : 'remove'](darkTheme)
+            themeButton.classList[selectedIcon === 'ri-moon-line' ? 'add' : 'remove'](iconTheme)
+        }
+
+        const activeUser = localStorage.getItem('agrixUser');
+        if (activeUser) {
+            landingWrapper.style.display = 'none';
+            appInterface.style.display = 'block';
+            loginContainer.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+            document.getElementById('userDisplay').innerText = activeUser;
+        }
+    };
+
+    // --- NAVIGATION FUNCTIONS ---
+    function showApp() {
+        landingWrapper.style.display = 'none';
+        appInterface.style.display = 'block';
+        
+        if (localStorage.getItem('agrixUser')) {
+            loginContainer.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+        } else {
+            loginContainer.style.display = 'flex';
+            dashboardContainer.style.display = 'none';
+        }
+    }
+
+    function showLanding() {
+        appInterface.style.display = 'none';
+        landingWrapper.style.display = 'block';
+    }
+
+    function logout() {
+        localStorage.removeItem('agrixUser');
+        window.location.reload(); 
+    }
+
+    // --- LOGIN HANDLER ---
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        
+        if(user === 'admin' && pass === '1234') {
+            localStorage.setItem('agrixUser', user);
+            loginContainer.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+            document.getElementById('userDisplay').innerText = user;
+            closeFeature();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    });
+
+    // --- DASHBOARD FEATURE TOGGLING ---
+    function openFeature(featureName) {
+        mainGrid.style.display = 'none';
+        document.getElementById('welcome-msg').style.display = 'none';
+        featureViews.style.display = 'block';
+        document.querySelectorAll('.feature-detail').forEach(el => el.style.display = 'none');
+        document.getElementById('view-' + featureName).style.display = 'block';
+    }
+
+    function closeFeature() {
+        featureViews.style.display = 'none';
+        mainGrid.style.display = 'grid';
+        document.getElementById('welcome-msg').style.display = 'block';
+        if(document.getElementById('suitability-output')) 
+            document.getElementById('suitability-output').innerHTML = '';
+        if(document.getElementById('recommendation-output'))
+            document.getElementById('recommendation-output').innerHTML = '';
+    }
+
+
+    // --- API 1: SUITABILITY CHECKER ---
+    if(document.getElementById('suitabilityForm')) {
+        document.getElementById('suitabilityForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Checking...'; btn.disabled = true;
+
+            const payload = {
+                crop: document.getElementById('suit-crop').value,
+                temperature: document.getElementById('suit-temp').value,
+                humidity: document.getElementById('suit-humid').value,
+                rainfall: document.getElementById('suit-rain').value
+            };
+
+            try {
+                const response = await fetch('/check_suitability', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                let resultClass = data.isSuitable ? 'success' : 'danger';
+                let resultText = data.isSuitable ? 'YES - Suitable' : 'NO - Not Suitable';
+                
+                let listHtml = "";
+                if(data.top_crops) {
+                    listHtml = data.top_crops.map(item => `<li>${item.crop} <span>${(item.confidence * 100).toFixed(1)}%</span></li>`).join('');
+                }
+
+                document.getElementById('suitability-output').innerHTML = `
+                    <div class="result-box ${resultClass}">
+                        <h3>${resultText} for '${data.crop}'</h3>
+                        <p><strong>Alternative Recommendations:</strong></p>
+                        <ul class="rec-list">${listHtml}</ul>
+                    </div>
+                `;
+            } catch (error) { console.error(error); }
+            btn.innerHTML = originalText; btn.disabled = false;
+        });
+    }
+
+
+    // --- API 2: CROP RECOMMENDATION ---
+    if(document.getElementById('recommendationForm')) {
+        document.getElementById('recommendationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Computing...'; btn.disabled = true;
+
+            const payload = {
+                N: document.getElementById('rec-N').value,
+                P: document.getElementById('rec-P').value,
+                K: document.getElementById('rec-K').value,
+                temperature: document.getElementById('rec-temp').value,
+                humidity: document.getElementById('rec-humid').value,
+                ph: document.getElementById('rec-ph').value,
+                rainfall: document.getElementById('rec-rain').value
+            };
+
+            try {
+                const response = await fetch('/predict_crop', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('recommendation-output').innerHTML = `<div class="result-box danger">Error: ${data.error}</div>`;
+                } else {
+                    const cropName = data.crop || data.recommended_crop;
+                    document.getElementById('recommendation-output').innerHTML = `
+                        <div class="result-box success" style="text-align:center;">
+                            <h3>Recommended Crop</h3>
+                            <h1 style="font-size: 2.5rem; text-transform: uppercase; margin: 10px 0;">${cropName}</h1>
+                        </div>
+                    `;
+                }
+            } catch (error) { console.error(error); }
+            btn.innerHTML = originalText; btn.disabled = false;
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AgriSense — Crop & Fertilizer AI</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Lottie player -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+  <!-- Feather icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <!-- LEFT: Form area -->
+    <main class="panel">
+      <header class="panel-header">
+        <div class="brand">
+          <div class="logo">
+            <!-- small plant SVG -->
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 21s-4-4-4-8a4 4 0 0 1 8 0c0 4-4 8-4 8z" fill="#3FA34D"/>
+              <path d="M12 3s2 2 4 2" stroke="#2E7D32" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>AgriSense</h1>
+            <p>Crop & Fertilizer Recommendation</p>
+          </div>
+        </div>
+
+        <nav class="small-meta">
+          <button id="btnSamples" class="ghost">Auto-fill sample</button>
+          <a href="#" id="dataLinks" class="ghost">Datasets</a>
+        </nav>
+      </header>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-target="cropTab">Crop</button>
+        <button class="tab" data-target="fertTab">Fertilizer</button>
+      </div>
+
+      <!-- Tab contents -->
+      <section id="cropTab" class="tab-body show">
+        <h2>Crop Prediction</h2>
+        <p class="hint">Enter soil & climate values — we'll recommend the best crop.</p>
+
+        <form id="cropForm" class="form">
+          <div class="row">
+            <label>State</label>
+            <select id="state" class="select"></select>
+          </div>
+
+          <div class="row">
+            <label>District</label>
+            <select id="district" class="select"></select>
+          </div>
+
+          <div class="row double">
+            <div>
+              <label>Nitrogen (N)</label>
+              <input id="N" type="number" placeholder="e.g. 90" />
+            </div>
+            <div>
+              <label>Phosphorus (P)</label>
+              <input id="P" type="number" placeholder="e.g. 42" />
+            </div>
+          </div>
+
+          <div class="row double">
+            <div>
+              <label>Potassium (K)</label>
+              <input id="K" type="number" placeholder="e.g. 43" />
+            </div>
+            <div>
+              <label>Soil pH</label>
+              <input id="ph" type="number" step="0.1" placeholder="e.g. 6.5" />
+            </div>
+          </div>
+
+          <div class="row double">
+            <div>
+              <label>Temperature (°C)</label>
+              <input id="temperature" type="number" placeholder="e.g. 28" />
+            </div>
+            <div>
+              <label>Humidity (%)</label>
+              <input id="humidity" type="number" placeholder="e.g. 75" />
+            </div>
+          </div>
+
+          <div class="row">
+            <label>Average Rainfall (mm)</label>
+            <input id="rainfall" type="number" placeholder="e.g. 220" />
+          </div>
+
+          <div class="row actions">
+            <button type="button" class="btn primary" id="predictCropBtn">Predict Crop</button>
+            <button type="reset" class="btn ghost">Reset</button>
+          </div>
+
+          <div id="cropResult" class="result-card"></div>
+        </form>
+      </section>
+
+      <section id="fertTab" class="tab-body">
+        <h2>Fertilizer Prediction</h2>
+        <p class="hint">Provide crop & soil info — we'll recommend fertilizer.</p>
+
+        <form id="fertForm" class="form">
+          <div class="row">
+            <label>Crop Type</label>
+            <select id="f_crop" class="select"></select>
+          </div>
+
+          <div class="row">
+            <label>Soil Type</label>
+            <select id="f_soil" class="select">
+              <option>Sandy</option>
+              <option>Loamy</option>
+              <option>Clay</option>
+              <option>Red</option>
+              <option>Black</option>
+            </select>
+          </div>
+
+          <div class="row double">
+            <div>
+              <label>Nitrogen (N)</label>
+              <input id="f_N" type="number" />
+            </div>
+            <div>
+              <label>Phosphorus (P)</label>
+              <input id="f_P" type="number" />
+            </div>
+          </div>
+
+          <div class="row double">
+            <div>
+              <label>Potassium (K)</label>
+              <input id="f_K" type="number" />
+            </div>
+            <div>
+              <label>Moisture (%)</label>
+              <input id="f_moisture" type="number" />
+            </div>
+          </div>
+
+          <div class="row double">
+            <div>
+              <label>Temperature (°C)</label>
+              <input id="f_temperature" type="number" />
+            </div>
+            <div>
+              <label>Humidity (%)</label>
+              <input id="f_humidity" type="number" />
+            </div>
+          </div>
+
+          <div class="row actions">
+            <button type="button" class="btn primary" id="predictFertBtn">Predict Fertilizer</button>
+            <button type="reset" class="btn ghost">Reset</button>
+          </div>
+
+          <div id="fertResult" class="result-card"></div>
+        </form>
+      </section>
+
+      <footer class="panel-footer">
+        <small>Models: local Flask API at <code>http://127.0.0.1:5000</code></small>
+      </footer>
+    </main>
+
+    <!-- RIGHT: Visual / Lottie -->
+    <aside class="visual">
+      <div class="visual-inner">
+        <lottie-player src="https://assets6.lottiefiles.com/packages/lf20_0yfsb3a1.json"  background="transparent"  speed="1"  loop  autoplay></lottie-player>
+        <div class="visual-caption">
+          <h2>AI for Sustainable Farming</h2>
+          <p>Fast crop & fertilizer recommendations based on soil & climate — offline ready.</p>
+          <div class="icons">
+            <span title="Crop"><i data-feather="seed"></i> Crop</span>
+            <span title="Fertilizer"><i data-feather="package"></i> Fertilizer</span>
+            <span title="Soil"><i data-feather="map-pin"></i> Soil</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script>feather.replace()</script>
+</body>
+</html>

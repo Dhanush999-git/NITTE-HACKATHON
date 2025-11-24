@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AgriSense — Crop Recommendation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Assuming you have style.css in static/style/ -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+
+  <style>
+      /* Simple fix for result box if css is missing */
+      .result-box {
+          margin-top: 20px;
+          padding: 15px;
+          border-radius: 8px;
+          text-align: center;
+          font-weight: bold;
+          font-size: 1.2rem;
+      }
+      .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+      .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="panel">
+      <header class="panel-header">
+        <div class="brand">
+          <div class="logo"></div> <!-- You can add an icon/img here if you want -->
+          <div>
+            <h1>AgriSense</h1>
+            <p>Crop Recommendation</p>
+          </div>
+        </div>
+
+        <!-- CHANGED: Points to root '/'. JS in index.html will handle the dashboard view -->
+        <button class="btn ghost" onclick="window.location.href='/'">
+          Back to TAI Dashboard
+        </button>
+      </header>
+
+      <form id="cropForm" class="form">
+        
+        <!-- STATE & DISTRICT DROPDOWNS -->
+        <div class="row">
+          <label>State</label>
+          <select id="state" class="select" onchange="loadDistricts()">
+              <option value="" disabled selected>Select State</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label>District</label>
+          <select id="district" class="select">
+              <option value="" disabled selected>Select District</option>
+          </select>
+        </div>
+
+        <!-- NUTRIENTS -->
+        <div class="row double">
+          <div>
+            <label>Nitrogen (N)</label>
+            <input id="N" type="number" placeholder="e.g. 90" required>
+          </div>
+          <div>
+            <label>Phosphorus (P)</label>
+            <input id="P" type="number" placeholder="e.g. 42" required>
+          </div>
+        </div>
+
+        <div class="row double">
+          <div>
+            <label>Potassium (K)</label>
+            <input id="K" type="number" placeholder="e.g. 43" required>
+          </div>
+          <div>
+            <label>Soil pH</label>
+            <input id="ph" type="number" step="0.1" placeholder="e.g. 6.5" required>
+          </div>
+        </div>
+
+        <!-- WEATHER (Users can type, or we can auto-fill later) -->
+        <div class="row double">
+          <div>
+            <label>Temperature (°C)</label>
+            <input id="temperature" type="number" step="0.1" placeholder="e.g. 28" required>
+          </div>
+          <div>
+            <label>Humidity (%)</label>
+            <input id="humidity" type="number" step="0.1" placeholder="e.g. 75" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Rainfall (mm)</label>
+          <input id="rainfall" type="number" step="0.1" placeholder="e.g. 220" required>
+        </div>
+
+        <div class="row actions">
+          <button type="submit" id="predictCropBtn" class="btn primary">Predict Crop</button>
+        </div>
+
+        <!-- OUTPUT RESULT AREA -->
+        <div id="cropResult"></div>
+      </form>
+    </main>
+    <aside class="visual">
+      <img src="https://media.istockphoto.com/id/543212762/photo/tractor-cultivating-field-at-spring.jpg?s=612x612&w=0&k=20&c=uJDy7MECNZeHDKfUrLNeQuT7A1IqQe89lmLREhjIJYU="
+           alt="crop Image"
+           style="width: 90%; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);">
+    </aside>
+  </div>
+
+  <!-- Link to the specific JavaScript file -->
+  <script src="{{ url_for('static', filename='js/crop.js') }}"></script>
+</body>
+</html>

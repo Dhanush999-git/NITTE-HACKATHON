@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annapurna Guide Bot</title>
+    <link rel="stylesheet" href="chat_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="chat-wrapper">
+
+    <div class="chat-header">
+        <img src="https://cdn-icons-png.flaticon.com/512/7656/7656130.png" class="bot-logo">
+        <div>
+            <h2>Annapurna Guide Bot</h2>
+            <p>Your Smart Farming Navigator</p>
+        </div>
+    </div>
+
+    <div class="quick-buttons">
+        <button onclick="quick('crop')">🌾 Crop</button>
+        <button onclick="quick('weather')">🌤️ Weather</button>
+        <button onclick="quick('fertilizer')">🧪 Fertilizer</button>
+        <button onclick="quick('disease')">🍃 Disease</button>
+        <button onclick="quick('guide')">👨‍🌾 Guide</button>
+    </div>
+
+    <div id="chatBox" class="chat-box"></div>
+
+    <div class="input-area glass">
+        <input id="userInput" type="text" placeholder="Type something...">
+        <button onclick="sendMessage()">➤</button>
+    </div>
+
+</div>
+
+<script src="chat_app.js"></script>
+</body>
+</html>
